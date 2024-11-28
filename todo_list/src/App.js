@@ -1,48 +1,39 @@
 import './App.css';
 import TodoItem from './components/TodoItem';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 function App() {
-  const [list, setList] = useState([
-    {
-      "id": 1,
-      "title": "Complete React project",
-      "isChecked": false
-    },
-    {
-      "id": 2,
-      "title": "Write blog post",
-      "isChecked": true
-    },
-    {
-      "id": 3,
-      "title": "Go grocery shopping",
-      "isChecked": false
-    },
-    {
-      "id": 4,
-      "title": "Clean the house",
-      "isChecked": true
-    },
-    {
-      "id": 5,
-      "title": "Read a book",
-      "isChecked": false
-    }
-  ])
+  const [todoValue, setTodoValue] = useState('');
+  const [list, setList] = useState(() => {
+    const savedTodos = localStorage.getItem("todos");
+    return savedTodos ? JSON.parse(savedTodos) : [];
+  })
+
+  useEffect(() => {
+    localStorage.setItem("todos", JSON.stringify(list));
+  }, [list])
+
 
   function onCheckChange(data) {
     const updatedList = list.map(item => item.id === data.id ? { ...item, isChecked: !item.isChecked } : item)
     setList(updatedList);
   }
 
+  function onBtnClick() {
+    setList((prevList) => [...prevList, { id: Date.now(), title: todoValue, isChecked: false }]);
+    setTodoValue('');
+  }
+
+  function inputOnChange(event) {
+    setTodoValue(event.target.value);
+  }
 
   return (
     <>
       <section className="container my-5">
         <div className="input-group">
-          <input type="text" className="form-control" placeholder="Todo ekle" aria-label="Username" aria-describedby="addon-wrapping" />
-          <button className="btn btn-primary">Ekle</button>
+          <input type="text" className="form-control" placeholder="Todo ekle" aria-label="Username" value={todoValue} onChange={inputOnChange} aria-describedby="addon-wrapping" />
+          <button className="btn btn-primary" onClick={onBtnClick}>Ekle</button>
         </div>
       </section>
 
@@ -55,7 +46,6 @@ function App() {
           </ul>
         </div>
       </section>
-
     </>
   );
 }
