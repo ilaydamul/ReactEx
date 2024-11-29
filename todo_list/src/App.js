@@ -28,6 +28,11 @@ function App() {
     setTodoValue(event.target.value);
   }
 
+  function onDeleteTodo(data) {
+    const updatedList = list.filter((item) => item.id !== data.id);
+    setList(updatedList);
+  }
+
   return (
     <>
       <section className="container my-5">
@@ -39,9 +44,20 @@ function App() {
 
       <section>
         <div className="container">
+
           <ul className="list-group">
             {
-              list.map((listItem) => <TodoItem data={listItem} key={listItem.id} onChange={() => onCheckChange(listItem)} />)
+              list.map((listItem) => listItem.isChecked === false && <TodoItem data={listItem} key={listItem.id} onChange={() => onCheckChange(listItem)} onDeleteTodo={() => { onDeleteTodo(listItem) }} />)
+            }
+          </ul>
+
+          <h2 className='my-3'>Tamamlanmış Todolar </h2>
+          <ul className="list-group">
+            {
+              list.map((listItem) =>
+                listItem.isChecked === true &&
+                <TodoItem data={listItem} key={listItem.id} onChange={() => onCheckChange(listItem)} onDeleteTodo={() => { onDeleteTodo(listItem) }} />
+              )
             }
           </ul>
         </div>
